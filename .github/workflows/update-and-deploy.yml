@@ -1,0 +1,105 @@
+name: Update SDK Matrix & Deploy Pages
+
+on:
+  schedule:
+    - cron: '23 6 * * *'
+  push:
+    branches:
+      - main
+    paths:
+      - 'site/**'
+      - '.github/workflows/update-and-deploy.yml'
+  workflow_dispatch:
+    inputs:
+      backfill_min_channel:
+        description: 'Optional minimum .NET channel to backfill (e.g. 6.0)'
+        required: false
+        default: ''
+        type: string
+      force_recheck:
+        description: 'Re-inspect all target SDKs and NuGet packages ignoring cache'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: pages-and-data
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      should_deploy: ${{ steps.check.outputs.should_deploy }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Run collector tests
+        run: dotnet test SourceGeneratorSupport.sln -c Release
+
+      - name: Collect SDK & Roslyn version updates
+        if: github.event_name != 'push'
+        run: |
+          args=(--repo-root .)
+          if [ -n "${{ inputs.backfill_min_channel }}" ]; then
+            args+=(--backfill-min-channel "${{ inputs.backfill_min_channel }}")
+          fi
+          if [ "${{ inputs.force_recheck }}" = "true" ]; then
+            args+=(--force-recheck)
+          fi
+          dotnet run --project src/SdkCollector -c Release -- "${args[@]}"
+
+      - name: Commit data updates and decide Pages deployment
+        id: check
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "should_deploy=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ -n "$(git status --porcelain site/data/sdk-roslyn-versions.json README.md)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add site/data/sdk-roslyn-versions.json README.md
+            git commit -m "chore(data): update .NET SDK and Roslyn compatibility matrix"
+            git pull --rebase origin main
+            git push origin HEAD:main
+            echo "should_deploy=true" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "should_deploy=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No data changes detected; skipping commit and Pages deploy."
+            echo "should_deploy=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload GitHub Pages artifact
+        if: steps.check.outputs.should_deploy == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./site
+
+  deploy:
+    needs: collect
+    if: needs.collect.outputs.should_deploy == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

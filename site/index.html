@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>.NET SDK → Roslyn (Microsoft.CodeAnalysis) Compatibility Matrix</title>
+  <meta name="description" content="Daily updated compatibility table mapping .NET SDK versions and feature bands to Microsoft.CodeAnalysis (Roslyn) assembly and NuGet package versions for analyzers and source generators." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div class="hero-top">
+        <div>
+          <p class="eyebrow">.NET Analyzers &amp; Source Generators</p>
+          <h1>.NET SDK &rarr; Roslyn Compatibility Matrix</h1>
+        </div>
+        <div class="hero-actions">
+          <button id="theme-toggle" class="btn btn-ghost" type="button" title="Toggle color theme">Theme: Auto</button>
+          <a class="btn btn-ghost" href="data/sdk-roslyn-versions.json" target="_blank" rel="noopener">Raw JSON</a>
+          <a class="btn btn-primary" href="https://github.com/johnstrand/source-generator-support" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </div>
+
+      <p class="lead">
+        Source generators and Roslyn analyzers run inside the host compiler (<code>dotnet build</code> or Visual Studio MSBuild).
+        Your referenced <code>Microsoft.CodeAnalysis*</code> NuGet package&rsquo;s <code>AssemblyVersion</code> must be
+        <strong>&le;</strong> the version shipped in your users&rsquo; .NET SDK.
+      </p>
+
+      <div class="stats-bar" id="stats-bar">
+        <span class="stat-pill">Loading dataset&hellip;</span>
+      </div>
+    </header>
+
+    <details class="card helper-card" id="helper-details">
+      <summary class="helper-summary">
+        <span class="helper-caret" aria-hidden="true">&#9654;</span>
+        <div class="helper-summary-text">
+          <h2 id="helper-heading">Compatibility &amp; Multi-Targeting Helper</h2>
+          <p class="muted">Pick your minimum supported .NET SDK (or build a multi-Roslyn package) to get exact NuGet references.</p>
+        </div>
+      </summary>
+
+      <div class="helper-body">
+        <div class="helper-toolbar">
+          <div class="segmented" role="tablist" aria-label="Helper mode">
+            <button type="button" class="seg-btn active" data-helper-tab="single" role="tab" aria-selected="true">Single Minimum Target</button>
+            <button type="button" class="seg-btn" data-helper-tab="multi" role="tab" aria-selected="false">Multi-Roslyn Tiers</button>
+          </div>
+        </div>
+
+        <div id="helper-single" class="helper-panel">
+          <div class="helper-single-grid">
+            <div class="field">
+              <label for="min-band-select">Minimum .NET SDK Feature Band to Support</label>
+              <select id="min-band-select"></select>
+            </div>
+            <div class="helper-result" id="single-result"></div>
+          </div>
+          <div class="code-block-wrap">
+            <div class="code-header">
+              <span>Analyzer / Source Generator <code>.csproj</code></span>
+              <button type="button" class="btn btn-sm btn-ghost copy-btn" data-copy-target="single-snippet">Copy Snippet</button>
+            </div>
+            <pre><code id="single-snippet"></code></pre>
+          </div>
+        </div>
+
+        <div id="helper-multi" class="helper-panel hidden">
+          <p class="muted small-note">
+            Select the Roslyn <code>Major.Minor</code> breakpoints your analyzer package should compile separate assemblies for
+            (packaged under <code>analyzers/dotnet/roslyn&lt;ver&gt;/cs</code> per Roslyn multi-targeting conventions).
+          </p>
+          <div id="multi-tiers-list" class="tier-chips"></div>
+          <div class="code-block-wrap">
+            <div class="code-header">
+              <span>Multi-Targeted Analyzer <code>.csproj</code> &amp; Pack Layout</span>
+              <button type="button" class="btn btn-sm btn-ghost copy-btn" data-copy-target="multi-snippet">Copy Snippet</button>
+            </div>
+            <pre><code id="multi-snippet"></code></pre>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <section class="controls-bar card" aria-label="Table filters and view options">
+      <div class="controls-row">
+        <div class="segmented" role="group" aria-label="Table grouping view">
+          <button type="button" class="seg-btn active" data-view="bands">Feature Bands</button>
+          <button type="button" class="seg-btn" data-view="channels">Channels</button>
+          <button type="button" class="seg-btn" data-view="sdks">All SDK Releases</button>
+        </div>
+
+        <div class="search-wrap">
+          <input id="search-input" type="search" placeholder="Filter SDK (10.0.404), Roslyn (4.12), VS (17.12), C# (13)..." aria-label="Search compatibility matrix" />
+        </div>
+
+        <div class="toggles-wrap">
+          <label class="toggle-label">
+            <input type="checkbox" id="toggle-eol" checked />
+            <span>Show EOL (.NET 6&ndash;9)</span>
+          </label>
+          <label class="toggle-label">
+            <input type="checkbox" id="toggle-preview" />
+            <span>Show Previews / RCs</span>
+          </label>
+          <button type="button" id="expand-all-btn" class="btn btn-sm btn-ghost">Expand All</button>
+        </div>
+      </div>
+    </section>
+
+    <main class="card table-card">
+      <div id="table-status" class="table-status hidden"></div>
+      <div class="table-scroll">
+        <table id="matrix-table">
+          <thead id="table-head"></thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        Data automatically collected daily from
+        <a href="https://builds.dotnet.microsoft.com/dotnet/release-metadata/releases-index.json" target="_blank" rel="noopener">Microsoft .NET Release Metadata</a>
+        and <a href="https://www.nuget.org/packages/Microsoft.CodeAnalysis.CSharp" target="_blank" rel="noopener">NuGet.org</a>.
+        MIT Licensed &middot; <a href="https://github.com/johnstrand/source-generator-support" target="_blank" rel="noopener">Source on GitHub</a>
+      </p>
+    </footer>
+  </div>
+
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
