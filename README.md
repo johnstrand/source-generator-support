@@ -17,7 +17,7 @@ Automated daily tracker mapping official `.NET` SDK releases and feature bands t
 <!-- SUMMARY_TABLE_START -->
 | .NET Band | Latest SDK | Support | Max NuGet (`Microsoft.CodeAnalysis.CSharp`) | SDK `AssemblyVersion` | VS / MSBuild | C# |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `11.0.1xx` | `11.0.100` | STS (active) | [`5.9.0`](https://www.nuget.org/packages/Microsoft.CodeAnalysis.CSharp/5.9.0) *(awaiting newer NuGet)* | `5.12.0.0` | Visual Studio 2026 (v18.12) (MSBuild `18.12.2`) | 15.0 |
+| `11.0.1xx` | `11.0.100` | STS (active) | [`5.12.0`](https://www.nuget.org/packages/Microsoft.CodeAnalysis.CSharp/5.12.0) | `5.12.0.0` | Visual Studio 2026 (v18.12) (MSBuild `18.12.2`) | 15.0 |
 | `10.0.4xx` | `10.0.404` | LTS (active) | [`5.9.0`](https://www.nuget.org/packages/Microsoft.CodeAnalysis.CSharp/5.9.0) | `5.9.0.0` | Visual Studio 2026 (v18.11) (MSBuild `18.9.15`) | 14.0 |
 | `10.0.3xx` | `10.0.303` | LTS (active) | [`5.6.0`](https://www.nuget.org/packages/Microsoft.CodeAnalysis.CSharp/5.6.0) | `5.6.0.0` | Visual Studio 2026 (v18.8) (MSBuild `18.6.14`) | 14.0 |
 | `10.0.2xx` | `10.0.204` | LTS (active) | [`5.3.0`](https://www.nuget.org/packages/Microsoft.CodeAnalysis.CSharp/5.3.0) | `5.3.0.0` | Visual Studio 2026 (v18.5) (MSBuild `18.3.3`) | 14.0 |

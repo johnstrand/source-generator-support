@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "lastUpdatedUtc": "2026-11-13T14:56:16Z",
+  "lastUpdatedUtc": "2026-11-14T13:41:57Z",
   "sourceUrls": {
     "releasesIndex": "https://builds.dotnet.microsoft.com/dotnet/release-metadata/releases-index.json",
     "nugetCodeAnalysisCommon": "https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.common/index.json",
@@ -157,6 +157,12 @@
         "assemblyVersion": "5.9.0.0",
         "isPrerelease": false,
         "nugetUrl": "https://www.nuget.org/packages/Microsoft.CodeAnalysis.Common/5.9.0"
+      },
+      {
+        "version": "5.12.0",
+        "assemblyVersion": "5.12.0.0",
+        "isPrerelease": false,
+        "nugetUrl": "https://www.nuget.org/packages/Microsoft.CodeAnalysis.Common/5.12.0"
       }
     ],
     "codeAnalysisCSharp": [
@@ -309,6 +315,12 @@
         "assemblyVersion": "5.9.0.0",
         "isPrerelease": false,
         "nugetUrl": "https://www.nuget.org/packages/Microsoft.CodeAnalysis.CSharp/5.9.0"
+      },
+      {
+        "version": "5.12.0",
+        "assemblyVersion": "5.12.0.0",
+        "isPrerelease": false,
+        "nugetUrl": "https://www.nuget.org/packages/Microsoft.CodeAnalysis.CSharp/5.12.0"
       }
     ]
   },
@@ -330,9 +342,9 @@
           "latestRuntimeVersion": "11.0.0",
           "latestReleaseDate": "2026-11-10",
           "roslynAssemblyVersion": "5.12.0.0",
-          "codeAnalysisNuGetVersion": "5.9.0",
-          "codeAnalysisCSharpNuGetVersion": "5.9.0",
-          "nugetLag": true,
+          "codeAnalysisNuGetVersion": "5.12.0",
+          "codeAnalysisCSharpNuGetVersion": "5.12.0",
+          "nugetLag": false,
           "msbuildVersion": "18.12.2",
           "vsVersion": "18.12.0",
           "vsSupport": "Visual Studio 2026 (v18.12)",
@@ -376,9 +388,9 @@
                 "informationalVersion": "18.12.2-1.26529.118\u002B297acf930fb0f5c07fd4e51d78e521b4ad2e5d1f",
                 "commitSha": "297acf930fb0f5c07fd4e51d78e521b4ad2e5d1f"
               },
-              "maxCodeAnalysisNuGetVersion": "5.9.0",
-              "maxCodeAnalysisCSharpNuGetVersion": "5.9.0",
-              "nugetLag": true
+              "maxCodeAnalysisNuGetVersion": "5.12.0",
+              "maxCodeAnalysisCSharpNuGetVersion": "5.12.0",
+              "nugetLag": false
             }
           ]
         }
